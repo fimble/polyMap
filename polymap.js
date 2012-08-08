@@ -57,12 +57,11 @@
       o.map.geoObjects.add(o.polys);
       o.loadInputJson();
 
-      
-
       o.map.controls.add('zoomControl', { top: 5, right: 5 });
       if(!o.config.readonly) o.map.controls.add(o.createPresetsList(), { top: 5, left: 80});
       o.map.controls.add(o.createButtonCreate(), {top: 5, left: 5});
-      o.map.setBounds(o.polys.getBounds());
+
+      if(o.polys.geometry) o.map.setBounds(o.polys.getBounds());
     },
 
     createPoly: function(opts) {
@@ -117,7 +116,7 @@
         console.error('Ошибка получения координат из поля', e);
       }
 
-      $.each(coords, function(name, poly) {
+      $.each(coords || {}, function(name, poly) {
         o.addPoly(poly,name);
       });
     },
