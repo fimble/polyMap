@@ -58,15 +58,16 @@
       o.loadInputJson();
 
       o.map.controls.add('zoomControl', { top: 5, right: 5 });
-      if(!o.config.readonly) o.map.controls.add(o.createPresetsList(), { top: 5, left: 80});
-      o.map.controls.add(o.createButtonCreate(), {top: 5, left: 5});
+      if(!o.config.readonly) o.map.controls.add(o.newPresetsList(), { top: 5, left: 80});
+      o.map.controls.add(o.newButtonCreate(), {top: 5, left: 5});
 
       if(o.polys.geometry) o.map.setBounds(o.polys.getBounds());
     },
 
-    createPoly: function(opts) {
+    newPoly: function(opts) {
       var o = this,
           poly;
+      console.log(opts);
 
       try {
         poly = new ymaps.Polygon( opts.coords, {
@@ -87,7 +88,7 @@
 
       if(!o.config.readonly) {
         console.log(poly.editor.options.set('addInteriors', false));
-        poly.events.add('click', function() {
+        poly.events.add('mousedown', function() {
           if(o.currentPoly) {
             o.currentPoly.editor.stopEditing();
           }
@@ -103,26 +104,28 @@
       return poly;
     },
 
-    addPoly: function(coords, name) {
+    addPoly: function(params) {
       var o = this;
-      o.polys.add( o.createPoly( { coords: coords, name: name} ) );        
+      o.polys.add( o.newPoly( params ) );        
     },
 
     loadInputJson: function() {
-      var o = this, inputVal, coords;
-      inputVal = o.config.inputElement.val();
+      var o = this, inputVal, data;
+
       try {
-        coords = new Function('return' + inputVal)();
+        data = new Function('return' + o.config.inputElement.val())();
       } catch(e) {
         console.error('Ошибка получения координат из поля', e);
       }
+      console.log(data);
 
-      $.each(coords || {}, function(name, poly) {
-        o.addPoly(poly,name);
+      $.each(data || {}, function(name, coord) {
+        console.log(name,coord);
+        o.addPoly({ coords: coord, name: name});
       });
     },
 
-    createButtonCreate: function() {
+    newButtonCreate: function() {
       var o = this,
           buttonCreate = new ymaps.control.Button({
             data: {
@@ -137,16 +140,16 @@
       buttonCreate.events.add('click', function(e) {
         var center = o.map.getCenter(), newPoly;
         newPoly= [[[center[0]-0.1, center[1]-0.1],[center[0]+0.1, center[1]],[center[0],center[1]+0.1]]]
-        o.polys.add( o.createPoly({
+        o.addPoly({
           name: o.config.defaultName,
           coords: newPoly,
           color: o.config.defaultColor
-        }) );
+        });
       });
       return buttonCreate;
     },
 
-    createPresetsList: function() {
+    newPresetsList: function() {
       var o = this,
           items=[],
           presetsList;
@@ -159,7 +162,7 @@
         }));       
 
         item.events.add('click', function () {
-          o.polys.add( o.createPoly(preset) );        
+          o.addPoly(preset);        
           presetsList.collapse();
         });
       });
