@@ -86,6 +86,7 @@
       poly.name = opts.name;
 
       if(!o.config.readonly) {
+        console.log(poly.editor.options.set('addInteriors', false));
         poly.events.add('click', function() {
           if(o.currentPoly) {
             o.currentPoly.editor.stopEditing();
@@ -135,9 +136,7 @@
 
       buttonCreate.events.add('click', function(e) {
         var center = o.map.getCenter(), newPoly;
-        newPoly= [[[center[0], center[1]],[center[0]+0.1, center[1]],[center[0],center[1]+0.1]]]
-
-
+        newPoly= [[[center[0]-0.1, center[1]-0.1],[center[0]+0.1, center[1]],[center[0],center[1]+0.1]]]
         o.polys.add( o.createPoly({
           name: o.config.defaultName,
           coords: newPoly,
