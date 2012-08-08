@@ -67,7 +67,6 @@
     newPoly: function(opts) {
       var o = this,
           poly;
-      console.log(opts);
 
       try {
         poly = new ymaps.Polygon( opts.coords, {
@@ -87,7 +86,6 @@
       poly.name = opts.name;
 
       if(!o.config.readonly) {
-        console.log(poly.editor.options.set('addInteriors', false));
         poly.events.add('mousedown', function() {
           if(o.currentPoly) {
             o.currentPoly.editor.stopEditing();
@@ -117,10 +115,8 @@
       } catch(e) {
         console.error('Ошибка получения координат из поля', e);
       }
-      console.log(data);
 
       $.each(data || {}, function(name, coord) {
-        console.log(name,coord);
         o.addPoly({ coords: coord, name: name});
       });
     },
