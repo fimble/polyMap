@@ -86,6 +86,7 @@
       poly.name = opts.name;
 
       if(!o.config.readonly) {
+        poly.editor.options.set('addInteriors',false);
         poly.events.add('mousedown', function() {
           if(o.currentPoly) {
             o.currentPoly.editor.stopEditing();
@@ -103,8 +104,9 @@
     },
 
     addPoly: function(params) {
-      var o = this;
-      o.polys.add( o.newPoly( params ) );        
+      var o = this, poly;
+      o.polys.add( poly = o.newPoly( params ) );        
+      return poly;
     },
 
     loadInputJson: function() {
@@ -125,7 +127,7 @@
       var o = this,
           buttonCreate = new ymaps.control.Button({
             data: {
-             image: 'images/button.jpg',
+             //image: 'images/button.jpg',
              content: 'Создать',
              title: 'Создать новый'
             }
@@ -134,13 +136,15 @@
           });
 
       buttonCreate.events.add('click', function(e) {
-        var center = o.map.getCenter(), newPoly;
-        newPoly= [[[center[0]-0.1, center[1]-0.1],[center[0]+0.1, center[1]],[center[0],center[1]+0.1]]]
-        o.addPoly({
+        var center = o.map.getCenter(), polyl, coords;
+        coords = [[center]];
+        
+        poly = o.addPoly({
           name: o.config.defaultName,
-          coords: newPoly,
+          coords: coords,
           color: o.config.defaultColor
         });
+        poly.editor.startEditing();
       });
       return buttonCreate;
     },
