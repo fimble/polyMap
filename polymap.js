@@ -199,7 +199,7 @@
 
         if(o.currentPoly) {
           o.currentPoly.getParent().remove(o.currentPoly)
-          o.currentPoly = null;
+          o.currentPoly = false;
         }
         o.updateInput();
       });
