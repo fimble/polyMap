@@ -57,9 +57,11 @@
       o.map.geoObjects.add(o.polys);
       o.loadInputJson();
 
+      o.btn = {};
       o.map.controls.add('zoomControl', { top: 5, right: 5 });
-      if(!o.config.readonly) o.map.controls.add(o.newPresetsList(), { top: 5, left: 80});
-      o.map.controls.add(o.newButtonCreate(), {top: 5, left: 5});
+      if(!o.config.readonly) o.map.controls.add(o.newPresetsList(), { top: 5, left: 160});
+      o.map.controls.add(o.btn.create = o.newButtonCreate(), {top: 5, left: 5});
+      o.map.controls.add(o.btn.remove = o.newButtonRemove(), {top: 5, left: 80});
 
       if(o.polys.geometry) o.map.setBounds(o.polys.getBounds());
     },
@@ -137,6 +139,7 @@
 
       buttonCreate.events.add('click', function(e) {
         var center = o.map.getCenter(), polyl, coords;
+
         coords = [[center]];
         
         poly = o.addPoly({
@@ -144,7 +147,12 @@
           coords: coords,
           color: o.config.defaultColor
         });
-        poly.editor.startEditing();
+
+        if(o.currentPoly) o.currentPoly.stopEditing();
+        o.currentPoly = poly;
+        o.currentPoly.editor.startEditing();
+
+        o.updateInput();
       });
       return buttonCreate;
     },
@@ -164,6 +172,7 @@
         item.events.add('click', function () {
           o.addPoly(preset);        
           presetsList.collapse();
+          o.updateInput();
         });
       });
 
@@ -173,6 +182,29 @@
       });
 
       return presetsList;
+    },
+
+    newButtonRemove: function() {
+      var o = this,
+          buttonRemove = new ymaps.control.Button({
+            data: {
+              content: 'Удалить',
+              title: 'Удалить текущий полигон'
+            }
+          },{
+            selectOnClick: false
+          });
+
+      buttonRemove.events.add('click', function(e) {
+
+        if(o.currentPoly) {
+          o.currentPoly.getParent().remove(o.currentPoly)
+          o.currentPoly = null;
+        }
+        o.updateInput();
+      });
+
+      return buttonRemove;
     },
 
     updateInput: function() {
