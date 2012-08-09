@@ -138,7 +138,7 @@
           });
 
       buttonCreate.events.add('click', function(e) {
-        var center = o.map.getCenter(), polyl, coords;
+        var center = o.map.getCenter(), poly, coords;
 
         coords = [[center]];
         
@@ -148,7 +148,7 @@
           color: o.config.defaultColor
         });
 
-        if(o.currentPoly) o.currentPoly.stopEditing();
+        if(o.currentPoly) o.currentPoly.editor.stopEditing();
         o.currentPoly = poly;
         o.currentPoly.editor.startEditing();
 
